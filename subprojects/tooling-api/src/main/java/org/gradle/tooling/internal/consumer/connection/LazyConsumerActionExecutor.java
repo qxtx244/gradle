@@ -46,6 +46,7 @@ public class LazyConsumerActionExecutor implements ConsumerActionExecutor {
     private ConsumerConnection connection;
 
     private final ConnectionParameters connectionParameters;
+    private BuildCancellationToken cancellationToken;
 
     public LazyConsumerActionExecutor(Distribution distribution, ToolingImplementationLoader implementationLoader, LoggingProvider loggingProvider, ConnectionParameters connectionParameters) {
         this.distribution = distribution;
@@ -72,6 +73,22 @@ public class LazyConsumerActionExecutor implements ConsumerActionExecutor {
         }
     }
 
+    public void stopNow() {
+        lock.lock();
+        try {
+            if (cancellationToken != null) {
+                cancellationToken.cancel();
+            }
+            stopped = true;
+//            for (Thread thread : executing) {
+//                thread.interrupt();
+//            }
+        } finally {
+            lock.unlock();
+        }
+        // TODO where should we invoke StopWhenIdle?
+    }
+
     @Override
     public String getDisplayName() {
         return distribution.getDisplayName();
@@ -81,7 +98,7 @@ public class LazyConsumerActionExecutor implements ConsumerActionExecutor {
     public <T> T run(ConsumerAction<T> action) throws UnsupportedOperationException, IllegalStateException {
         try {
             ConsumerOperationParameters parameters = action.getParameters();
-            BuildCancellationToken cancellationToken = parameters.getCancellationToken();
+            this.cancellationToken = parameters.getCancellationToken();
             InternalBuildProgressListener buildProgressListener = parameters.getBuildProgressListener();
             ConsumerConnection connection = onStartAction(cancellationToken, buildProgressListener);
             return action.run(connection);

@@ -197,4 +197,9 @@ public interface ProjectConnection extends Closeable {
      */
     @Override
     void close();
+
+    /**
+     * TODO documentation.
+     */
+    void stopNow();
 }

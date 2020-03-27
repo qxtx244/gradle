@@ -35,5 +35,10 @@ public interface AsyncConsumerActionExecutor {
      */
     void stop();
 
+    /**
+     * TODO documentation.
+     */
+    void stopNow();
+
     String getDisplayName();
 }

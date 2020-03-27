@@ -83,6 +83,7 @@ throw new RuntimeException("should not run")
     }
 
     def "can cancel model creation during configuration phase"() {
+        // !!
         file("gradle.properties") << "org.gradle.configureondemand=${configureOnDemand}"
         setupCancelInConfigurationBuild()
 

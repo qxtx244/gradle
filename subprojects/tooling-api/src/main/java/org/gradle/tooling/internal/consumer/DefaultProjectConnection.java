@@ -45,6 +45,10 @@ class DefaultProjectConnection implements ProjectConnection {
         connection.stop();
     }
 
+    public void stopNow() {
+        connection.stopNow();
+    }
+
     @Override
     public <T> T getModel(Class<T> modelType) {
         return model(modelType).get();

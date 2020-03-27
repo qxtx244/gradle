@@ -43,6 +43,11 @@ public class ProgressLoggingConsumerActionExecutor implements ConsumerActionExec
     }
 
     @Override
+    public void stopNow() {
+        actionExecutor.stopNow();
+    }
+
+    @Override
     public String getDisplayName() {
         return actionExecutor.getDisplayName();
     }
