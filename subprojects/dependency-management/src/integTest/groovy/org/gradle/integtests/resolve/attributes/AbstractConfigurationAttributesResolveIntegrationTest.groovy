@@ -398,12 +398,11 @@ include 'a', 'b'
         fails ':a:checkDebug'
 
         then:
-        failure.assertHasCause '''Variant 'bar' in project :b does not match the consumer attributes
+        failure.assertHasCause """Variant 'bar' in project :b does not match the consumer attributes
 Variant 'bar' capability test:b:unspecified:
   - Incompatible attribute:
       - Required buildType 'debug' and found incompatible value 'release'.
-  - Other compatible attribute:
-      - Required flavor 'free' and found value 'free'.'''
+  - Other compatible attribute: Provides flavor 'free'"""
 
         when:
         run ':a:checkRelease'
@@ -545,8 +544,7 @@ Variant 'bar' capability test:b:unspecified:
   - Variant 'foo' capability test:b:unspecified:
       - Incompatible attribute:
           - Required buildType 'debug' and found incompatible value 'release'.
-      - Other compatible attribute:
-          - Required flavor 'free' and found value 'free'.""")
+      - Other compatible attribute: Provides flavor 'free'""")
     }
 
     def "does not select default configuration when consumer has no attributes and configurations with attributes"() {
@@ -725,7 +723,7 @@ All of them match the consumer attributes:
         fails ':a:checkDebug'
 
         then:
-        failure.assertHasCause '''The consumer was configured to find attribute 'flavor' with value 'free', attribute 'buildType' with value 'debug' but no matching variant of project :b was found.
+        failure.assertHasCause """The consumer was configured to find attribute 'flavor' with value 'free', attribute 'buildType' with value 'debug' but no matching variant of project :b was found.
   - Variant 'bar' capability test:b:unspecified:
       - Incompatible attributes:
           - Required buildType 'debug' and found incompatible value 'release'.
@@ -733,8 +731,7 @@ All of them match the consumer attributes:
   - Variant 'foo' capability test:b:unspecified:
       - Incompatible attribute:
           - Required buildType 'debug' and found incompatible value 'release'.
-      - Other compatible attribute:
-          - Required flavor 'free' and found value 'free'.'''
+      - Other compatible attribute: Provides flavor 'free'"""
 
     }
 
@@ -859,13 +856,11 @@ All of them match the consumer attributes:
   - Variant 'bar' capability test:b:unspecified:
       - Unmatched attribute:
           - Required buildType 'debug' but no value provided.
-      - Compatible attribute:
-          - Required flavor 'free' and found value 'free'.
+      - Compatible attribute: Provides flavor 'free'
   - Variant 'foo' capability test:b:unspecified:
       - Unmatched attribute:
           - Required flavor 'free' but no value provided.
-      - Compatible attribute:
-          - Required buildType 'debug' and found value 'debug'.""")
+      - Compatible attribute: Provides buildType 'debug'""")
     }
 
     def "selects configuration when it has more attributes than the resolved configuration"() {
@@ -953,11 +948,9 @@ All of them match the consumer attributes:
   - foo
 All of them match the consumer attributes:
   - Variant 'bar' capability test:b:unspecified:
-      - Compatible attribute:
-          - Required buildType 'debug' and found value 'debug'.
+      - Compatible attribute: Provides buildType 'debug'
   - Variant 'foo' capability test:b:unspecified:
-      - Compatible attribute:
-          - Required buildType 'debug' and found value 'debug'."""
+      - Compatible attribute: Provides buildType 'debug'"""
     }
 
     def "fails when multiple configurations match but have more attributes than requested"() {
@@ -1009,13 +1002,13 @@ All of them match the consumer attributes:
       - Unmatched attribute:
           - Found extra 'extra 2' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'debug' and found value 'debug'.
-          - Required flavor 'free' and found value 'free'.
+          - Provides buildType 'debug'
+          - Provides flavor 'free'
   - Variant 'foo' capability test:b:unspecified:
       - Unmatched attribute: Found extra 'extra' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'debug' and found value 'debug'.
-          - Required flavor 'free' and found value 'free'."""
+          - Provides buildType 'debug'
+          - Provides flavor 'free'"""
     }
 
     /**
@@ -1090,13 +1083,11 @@ All of them match the consumer attributes:
   - Variant 'compile' capability test:b:unspecified:
       - Unmatched attribute:
           - Required buildType 'debug' but no value provided.
-      - Compatible attribute:
-          - Required flavor 'free' and found value 'free'.
+      - Compatible attribute: Provides flavor 'free'
   - Variant 'debug' capability test:b:unspecified:
       - Unmatched attribute:
           - Required flavor 'free' but no value provided.
-      - Compatible attribute:
-          - Required buildType 'debug' and found value 'debug'."""
+      - Compatible attribute: Provides buildType 'debug'"""
     }
 
     def "transitive dependencies of selected configuration are included"() {
@@ -1421,27 +1412,27 @@ All of them match the consumer attributes:
   - Variant 'foo' capability test:c:unspecified:
       - Unmatched attribute: Found extra 'extra' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'debug' and found value 'debug'.
-          - Required flavor 'free' and found value 'free'.
+          - Provides buildType 'debug'
+          - Provides flavor 'free'
   - Variant 'foo2' capability test:c:unspecified:
       - Unmatched attribute:
           - Found extra 'extra 2' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'debug' and found value 'debug'.
-          - Required flavor 'free' and found value 'free'.
+          - Provides buildType 'debug'
+          - Provides flavor 'free'
 The following variants were also considered but didn't match the requested attributes:
   - Variant 'bar' capability test:c:unspecified:
       - Incompatible attribute:
           - Required buildType 'debug' and found incompatible value 'release'.
       - Other compatible attributes:
           - Found extra 'extra' but wasn't required.
-          - Required flavor 'free' and found value 'free'.
+          - Provides flavor 'free'
   - Variant 'bar2' capability test:c:unspecified:
       - Incompatible attribute:
           - Required buildType 'debug' and found incompatible value 'release'.
       - Other compatible attributes:
           - Found extra 'extra 2' but wasn't required.
-          - Required flavor 'free' and found value 'free'."""
+          - Provides flavor 'free'"""
 
         when:
         fails ':a:checkRelease'
@@ -1454,27 +1445,27 @@ All of them match the consumer attributes:
   - Variant 'bar' capability test:c:unspecified:
       - Unmatched attribute: Found extra 'extra' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'release' and found value 'release'.
-          - Required flavor 'free' and found value 'free'.
+          - Provides buildType 'release'
+          - Provides flavor 'free'
   - Variant 'bar2' capability test:c:unspecified:
       - Unmatched attribute:
           - Found extra 'extra 2' but wasn't required.
       - Compatible attributes:
-          - Required buildType 'release' and found value 'release'.
-          - Required flavor 'free' and found value 'free'.
+          - Provides buildType 'release'
+          - Provides flavor 'free'
 The following variants were also considered but didn't match the requested attributes:
   - Variant 'foo' capability test:c:unspecified:
       - Incompatible attribute:
           - Required buildType 'release' and found incompatible value 'debug'.
       - Other compatible attributes:
           - Found extra 'extra' but wasn't required.
-          - Required flavor 'free' and found value 'free'.
+          - Provides flavor 'free'
   - Variant 'foo2' capability test:c:unspecified:
       - Incompatible attribute:
           - Required buildType 'release' and found incompatible value 'debug'.
       - Other compatible attributes:
           - Found extra 'extra 2' but wasn't required.
-          - Required flavor 'free' and found value 'free'."""
+          - Provides flavor 'free'"""
 
     }
 
