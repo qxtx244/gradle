@@ -425,5 +425,3 @@ allprojects {
     }
 }
 
-
-

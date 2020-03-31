@@ -43,7 +43,7 @@ class ToolingApiShutdownCrossVersionSpec extends CancellationSpec {
         when:
         withConnection { ProjectConnection connection ->
             def build = connection.newBuild()
-            build.forTasks('hang')
+            build.forTasks('hang').addJvmArguments(' -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=127.0.0.1:45227')
             build.run(resultHandler)
             sync.waitForAllPendingCalls(resultHandler)
             connection.stopNow()

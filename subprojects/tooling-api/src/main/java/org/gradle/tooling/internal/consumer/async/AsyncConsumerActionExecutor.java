@@ -41,4 +41,6 @@ public interface AsyncConsumerActionExecutor {
     void stopNow();
 
     String getDisplayName();
+
+    void stopWhenIdle();
 }

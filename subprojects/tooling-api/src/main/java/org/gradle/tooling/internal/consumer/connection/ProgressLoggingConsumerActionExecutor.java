@@ -72,6 +72,11 @@ public class ProgressLoggingConsumerActionExecutor implements ConsumerActionExec
         }
     }
 
+    @Override
+    public void stopWhenIdle() {
+        actionExecutor.stopWhenIdle();
+    }
+
     private static class ProgressListenerAdapter implements ProgressListener {
         private final ProgressListenerVersion1 progressListener;
 

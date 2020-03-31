@@ -49,4 +49,9 @@ public class CancellableConsumerActionExecutor implements ConsumerActionExecutor
     public void stopNow() {
         delegate.stopNow();
     }
+
+    @Override
+    public void stopWhenIdle() {
+        delegate.stopWhenIdle();
+    }
 }

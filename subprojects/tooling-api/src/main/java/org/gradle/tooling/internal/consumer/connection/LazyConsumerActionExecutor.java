@@ -19,6 +19,7 @@ import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.UncheckedException;
 import org.gradle.internal.logging.progress.ProgressLoggerFactory;
 import org.gradle.tooling.internal.consumer.ConnectionParameters;
+import org.gradle.tooling.internal.consumer.DefaultCancellationTokenSource;
 import org.gradle.tooling.internal.consumer.Distribution;
 import org.gradle.tooling.internal.consumer.LoggingProvider;
 import org.gradle.tooling.internal.consumer.loader.ToolingImplementationLoader;
@@ -87,6 +88,13 @@ public class LazyConsumerActionExecutor implements ConsumerActionExecutor {
             lock.unlock();
         }
         // TODO where should we invoke StopWhenIdle?
+    }
+
+    @Override
+    public void stopWhenIdle() {
+        ConsumerOperationParameters.Builder builder = ConsumerOperationParameters.builder();
+        builder.setCancellationToken(new DefaultCancellationTokenSource().token());
+        connection.stopWhenIdle(builder.build());
     }
 
     @Override

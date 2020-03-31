@@ -200,6 +200,12 @@ public interface ProjectConnection extends Closeable {
 
     /**
      * TODO documentation.
+     * Prototype consumer-side-only implementation. Sends a cancellation request only.
      */
     void stopNow();
+
+    /**
+     * Prototype implementation that sends a StopWhenIdle to all daemons.
+     */
+    void stopWhenIdle();
 }

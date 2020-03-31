@@ -50,6 +50,11 @@ class DefaultProjectConnection implements ProjectConnection {
     }
 
     @Override
+    public void stopWhenIdle() {
+        connection.stopWhenIdle();
+    }
+
+    @Override
     public <T> T getModel(Class<T> modelType) {
         return model(modelType).get();
     }

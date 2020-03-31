@@ -44,4 +44,9 @@ public class RethrowingErrorsConsumerActionExecutor implements ConsumerActionExe
     public void stopNow() {
         delegate.stopNow();
     }
+
+    @Override
+    public void stopWhenIdle() {
+        delegate.stopWhenIdle();
+    }
 }
