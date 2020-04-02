@@ -49,10 +49,6 @@ public class ConnectorServices {
         singletonRegistry.close();
     }
 
-    public static void disconnect() {
-        //  --singletonRegistry.getAll
-    }
-
     /**
      * Resets the state of connector services. Meant to be used only for testing!
      */

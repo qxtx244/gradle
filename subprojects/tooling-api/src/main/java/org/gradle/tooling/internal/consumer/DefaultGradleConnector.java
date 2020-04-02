@@ -57,10 +57,8 @@ public class DefaultGradleConnector extends GradleConnector {
         ConnectorServices.close();
     }
 
-    /*
-     * TODO call stopNow on all ProjectConnection instances.
-     */
     public static void disconnect() {
+        // TODO track all created ProjectConnection instances and call stopNow on all of them.
         ConnectorServices.close();
     }
 
