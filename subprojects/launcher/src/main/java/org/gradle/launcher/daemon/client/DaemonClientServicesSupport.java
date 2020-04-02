@@ -69,10 +69,6 @@ public abstract class DaemonClientServicesSupport extends DefaultServiceRegistry
         return new NotifyDaemonAboutChangedPathsClient(connector, idGenerator, daemonRegistry);
     }
 
-    StopWhenIdleClient createStopWhenIdleClient(DaemonConnector connector, IdGenerator<UUID> idGenerator, DaemonRegistry daemonRegistry) {
-        return new StopWhenIdleClient(connector, idGenerator, daemonRegistry);
-    }
-
     ReportDaemonStatusClient createReportDaemonStatusClient(DaemonRegistry registry, DaemonConnector connector, IdGenerator<UUID> idGenerator, DocumentationRegistry documentationRegistry) {
         return new ReportDaemonStatusClient(registry, connector, idGenerator, documentationRegistry);
     }

@@ -42,7 +42,6 @@ import org.gradle.launcher.cli.converter.PropertiesToDaemonParametersConverter;
 import org.gradle.launcher.daemon.client.DaemonClient;
 import org.gradle.launcher.daemon.client.DaemonClientFactory;
 import org.gradle.launcher.daemon.client.NotifyDaemonAboutChangedPathsClient;
-import org.gradle.launcher.daemon.client.StopWhenIdleClient;
 import org.gradle.launcher.daemon.configuration.DaemonParameters;
 import org.gradle.launcher.exec.BuildActionExecuter;
 import org.gradle.launcher.exec.BuildActionParameters;
@@ -196,8 +195,8 @@ public class ProviderConnection {
         LoggingServiceRegistry loggingServices = LoggingServiceRegistry.newNestedLogging();
         Parameters params = initParams(providerParameters);
         ServiceRegistry clientServices = daemonClientFactory.createMessageDaemonServices(loggingServices.get(OutputEventListener.class), params.daemonParams);
-        StopWhenIdleClient client = clientServices.get(StopWhenIdleClient.class);
-        client.stopWhenIdle();
+        // TODO maybe force-stop after a timeout
+        ((ShutdownCoordinator)clientServices.find(ShutdownCoordinator.class)).stop();
     }
 
     private Object run(BuildAction action, BuildCancellationToken cancellationToken,
