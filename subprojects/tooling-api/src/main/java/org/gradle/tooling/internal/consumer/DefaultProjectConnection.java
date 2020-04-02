@@ -30,28 +30,36 @@ import org.gradle.tooling.internal.consumer.parameters.ConsumerOperationParamete
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class DefaultProjectConnection implements ProjectConnection {
     private final AsyncConsumerActionExecutor connection;
     private final ConnectionParameters parameters;
 
+    private static final CopyOnWriteArrayList<DefaultProjectConnection> openInstances = new CopyOnWriteArrayList<>();
+
     public DefaultProjectConnection(AsyncConsumerActionExecutor connection, ConnectionParameters parameters) {
         this.connection = connection;
         this.parameters = parameters;
+        openInstances.add(this);
     }
 
     @Override
     public void close() {
         connection.stop();
+        synchronized (openInstances) {
+            openInstances.remove(this);
+        }
     }
 
-    public void stopNow() {
-        connection.stopNow();
-    }
-
-    @Override
-    public void stopWhenIdle() {
-        connection.stopWhenIdle();
+    static void closeAll() {
+        // TODO test what happens if this called before running a build
+        synchronized (openInstances) {
+            openInstances.forEach(it -> {
+                it.connection.stopNow();
+                it.connection.stopWhenIdle();
+            });
+        }
     }
 
     @Override
