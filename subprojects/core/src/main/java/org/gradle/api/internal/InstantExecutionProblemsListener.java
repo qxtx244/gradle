@@ -31,4 +31,9 @@ public interface InstantExecutionProblemsListener {
      * Called when accessing task dependencies.
      */
     void onTaskDependenciesAccess(String invocationDescription, Object invocationSource);
+
+    /**
+     * Called when registering a build scope listener.
+     */
+    void onBuildScopeListenerRegistration(Object listener, String invocationDescription, Object invocationSource);
 }

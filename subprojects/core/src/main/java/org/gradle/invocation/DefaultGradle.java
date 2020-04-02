@@ -30,6 +30,7 @@ import org.gradle.api.UnknownDomainObjectException;
 import org.gradle.api.initialization.IncludedBuild;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.internal.GradleInternal;
+import org.gradle.api.internal.InstantExecutionProblemsListener;
 import org.gradle.api.internal.MutationGuards;
 import org.gradle.api.internal.SettingsInternal;
 import org.gradle.api.internal.file.FileResolver;
@@ -277,24 +278,28 @@ public abstract class DefaultGradle extends AbstractPluginAware implements Gradl
     @Override
     public void beforeProject(Closure closure) {
         assertProjectMutatingMethodAllowed("beforeProject(Closure)");
+        notifyListenerRegistration("Gradle.beforeProject", closure);
         projectEvaluationListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("beforeEvaluate", getListenerBuildOperationDecorator().decorate("Gradle.beforeProject", closure)));
     }
 
     @Override
     public void beforeProject(Action<? super Project> action) {
         assertProjectMutatingMethodAllowed("beforeProject(Action)");
+        notifyListenerRegistration("Gradle.beforeProject", action);
         projectEvaluationListenerBroadcast.add("beforeEvaluate", getListenerBuildOperationDecorator().decorate("Gradle.beforeProject", action));
     }
 
     @Override
     public void afterProject(Closure closure) {
         assertProjectMutatingMethodAllowed("afterProject(Closure)");
+        notifyListenerRegistration("Gradle.afterProject", closure);
         projectEvaluationListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("afterEvaluate", getListenerBuildOperationDecorator().decorate("Gradle.afterProject", closure)));
     }
 
     @Override
     public void afterProject(Action<? super Project> action) {
         assertProjectMutatingMethodAllowed("afterProject(Action)");
+        notifyListenerRegistration("Gradle.afterProject", action);
         projectEvaluationListenerBroadcast.add("afterEvaluate", getListenerBuildOperationDecorator().decorate("Gradle.afterProject", action));
     }
 
@@ -304,6 +309,7 @@ public abstract class DefaultGradle extends AbstractPluginAware implements Gradl
             .willBeRemovedInGradle7()
             .withUpgradeGuideSection(5, "apis_buildlistener_buildstarted_and_gradle_buildstarted_have_been_deprecated")
             .nagUser();
+        notifyListenerRegistration("Gradle.buildStarted", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("buildStarted", closure));
     }
 
@@ -313,60 +319,71 @@ public abstract class DefaultGradle extends AbstractPluginAware implements Gradl
             .willBeRemovedInGradle7()
             .withUpgradeGuideSection(5, "apis_buildlistener_buildstarted_and_gradle_buildstarted_have_been_deprecated")
             .nagUser();
+        notifyListenerRegistration("Gradle.buildStarted", action);
         buildListenerBroadcast.add("buildStarted", action);
     }
 
     @Override
     public void beforeSettings(Closure<?> closure) {
+        notifyListenerRegistration("Gradle.beforeSettings", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("beforeSettings", closure));
     }
 
     @Override
     public void beforeSettings(Action<? super Settings> action) {
+        notifyListenerRegistration("Gradle.beforeSettings", action);
         buildListenerBroadcast.add("beforeSettings", action);
     }
 
     @Override
     public void settingsEvaluated(Closure closure) {
+        notifyListenerRegistration("Gradle.settingsEvaluated", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("settingsEvaluated", closure));
     }
 
     @Override
     public void settingsEvaluated(Action<? super Settings> action) {
+        notifyListenerRegistration("Gradle.settingsEvaluated", action);
         buildListenerBroadcast.add("settingsEvaluated", action);
     }
 
     @Override
     public void projectsLoaded(Closure closure) {
         assertProjectMutatingMethodAllowed("projectsLoaded(Closure)");
+        notifyListenerRegistration("Gradle.projectsLoaded", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("projectsLoaded", getListenerBuildOperationDecorator().decorate("Gradle.projectsLoaded", closure)));
     }
 
     @Override
     public void projectsLoaded(Action<? super Gradle> action) {
         assertProjectMutatingMethodAllowed("projectsLoaded(Action)");
+        notifyListenerRegistration("Gradle.projectsLoaded", action);
         buildListenerBroadcast.add("projectsLoaded", getListenerBuildOperationDecorator().decorate("Gradle.projectsLoaded", action));
     }
 
     @Override
     public void projectsEvaluated(Closure closure) {
         assertProjectMutatingMethodAllowed("projectsEvaluated(Closure)");
+        notifyListenerRegistration("Gradle.projectsEvaluated", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("projectsEvaluated", getListenerBuildOperationDecorator().decorate("Gradle.projectsEvaluated", closure)));
     }
 
     @Override
     public void projectsEvaluated(Action<? super Gradle> action) {
         assertProjectMutatingMethodAllowed("projectsEvaluated(Action)");
+        notifyListenerRegistration("Gradle.projectsEvaluated", action);
         buildListenerBroadcast.add("projectsEvaluated", getListenerBuildOperationDecorator().decorate("Gradle.projectsEvaluated", action));
     }
 
     @Override
     public void buildFinished(Closure closure) {
+        notifyListenerRegistration("Gradle.buildFinished", closure);
         buildListenerBroadcast.add(new ClosureBackedMethodInvocationDispatch("buildFinished", closure));
     }
 
     @Override
     public void buildFinished(Action<? super BuildResult> action) {
+        notifyListenerRegistration("Gradle.buildFinished", action);
         buildListenerBroadcast.add("buildFinished", action);
     }
 
@@ -379,7 +396,13 @@ public abstract class DefaultGradle extends AbstractPluginAware implements Gradl
     }
 
     private void addListener(String registrationPoint, Object listener) {
+        notifyListenerRegistration(registrationPoint, listener);
         getListenerManager().addListener(getListenerBuildOperationDecorator().decorateUnknownListener(registrationPoint, listener));
+    }
+
+    private void notifyListenerRegistration(String registrationPoint, Object listener) {
+        services.get(InstantExecutionProblemsListener.class)
+            .onBuildScopeListenerRegistration(listener, registrationPoint, this);
     }
 
     @Override

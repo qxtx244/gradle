@@ -24,6 +24,7 @@ import org.gradle.instantexecution.problems.InstantExecutionProblems
 import org.gradle.instantexecution.problems.PropertyProblem
 import org.gradle.instantexecution.problems.PropertyTrace
 import org.gradle.instantexecution.problems.StructuredMessage
+import org.gradle.internal.InternalListener
 
 
 class DefaultInstantExecutionProblemsListener internal constructor(
@@ -70,11 +71,46 @@ class DefaultInstantExecutionProblemsListener internal constructor(
             exception
         )
 
+    override fun onBuildScopeListenerRegistration(listener: Any, invocationDescription: String, invocationSource: Any) {
+        if (startParameter.isEnabled && listener !is InternalListener) {
+            val exception = InvalidUserCodeException(
+                "Listener registration '$invocationDescription' by $invocationSource is unsupported."
+            )
+            problems.onProblem(listenerRegistrationProblem(
+                traceFor(invocationSource),
+                listener,
+                invocationDescription,
+                exception
+            ))
+        }
+    }
+
+    private
+    fun listenerRegistrationProblem(
+        trace: PropertyTrace,
+        listener: Any,
+        invocationDescription: String,
+        exception: InvalidUserCodeException
+    ) =
+        PropertyProblem(
+            trace,
+            StructuredMessage.build {
+                text("registration of listener ")
+                reference(listener.toString())
+                text(" on ")
+                reference(invocationDescription)
+                text(" is unsupported")
+            },
+            exception
+        )
+
     private
     fun traceFor(invocationSource: Any) =
-        if (invocationSource is Task) PropertyTrace.Task(
-            GeneratedSubclasses.unpackType(invocationSource),
-            invocationSource.path
-        )
-        else PropertyTrace.Unknown
+        when (invocationSource) {
+            is Task -> PropertyTrace.Task(
+                GeneratedSubclasses.unpackType(invocationSource),
+                invocationSource.path
+            )
+            else -> PropertyTrace.Unknown
+        }
 }
