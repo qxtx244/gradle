@@ -19,8 +19,8 @@ package org.gradle.invocation
 import org.gradle.StartParameter
 import org.gradle.api.Action
 import org.gradle.api.initialization.dsl.ScriptHandler
+import org.gradle.api.internal.BuildScopeListenerRegistrationListener
 import org.gradle.api.internal.GradleInternal
-import org.gradle.api.internal.InstantExecutionProblemsListener
 import org.gradle.api.internal.SettingsInternal
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.internal.initialization.ClassLoaderScope
@@ -84,7 +84,7 @@ class DefaultGradleSpec extends Specification {
         _ * serviceRegistry.get(CrossProjectConfigurator) >> crossProjectConfigurator
         _ * serviceRegistry.get(BuildScanConfigInit) >> Mock(BuildScanConfigInit)
         _ * serviceRegistry.get(PublicBuildPath) >> new DefaultPublicBuildPath(Path.ROOT)
-        _ * serviceRegistry.get(InstantExecutionProblemsListener) >> Stub(InstantExecutionProblemsListener)
+        _ * serviceRegistry.get(BuildScopeListenerRegistrationListener) >> Stub(BuildScopeListenerRegistrationListener)
 
         gradle = TestUtil.instantiatorFactory().decorateLenient().newInstance(DefaultGradle.class, null, parameter, serviceRegistryFactory)
     }

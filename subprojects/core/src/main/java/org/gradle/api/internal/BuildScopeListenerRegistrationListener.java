@@ -16,23 +16,8 @@
 
 package org.gradle.api.internal;
 
-import org.gradle.api.Task;
 
-
-/**
- * Listen for instant execution problems.
- */
-public interface InstantExecutionProblemsListener {
-
-    /**
-     * Called when accessing the project.
-     */
-    void onTaskActionProjectAccess(String invocationDescription, Task task);
-
-    /**
-     * Called when accessing task dependencies.
-     */
-    void onTaskActionTaskDependenciesAccess(String invocationDescription, Task task);
+public interface BuildScopeListenerRegistrationListener {
 
     /**
      * Called when registering a build scope listener.
