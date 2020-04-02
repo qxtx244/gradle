@@ -19,29 +19,28 @@ package org.gradle.internal.snapshot;
 import org.gradle.internal.vfs.SnapshotHierarchy;
 import org.gradle.internal.vfs.impl.ChangeListenerFactory;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.UnaryOperator;
 
 public class SnapshotHierarchyReference {
-    private final AtomicReference<SnapshotHierarchy> root;
+    private volatile SnapshotHierarchy root;
     private final ReentrantLock updateLock = new ReentrantLock();
 
     public SnapshotHierarchyReference(SnapshotHierarchy root) {
-        this.root = new AtomicReference<>(root);
+        this.root = root;
     }
 
     public SnapshotHierarchy get() {
-        return root.get();
+        return root;
     }
 
     public void update(UnaryOperator<SnapshotHierarchy> updateFunction, ChangeListenerFactory.LifecycleAwareChangeListener changeListener) {
         updateLock.lock();
         try {
-            root.updateAndGet(current -> {
-                changeListener.start();
-                return updateFunction.apply(current);
-            });
+            changeListener.start();
+            @SuppressWarnings("UnnecessaryLocalVariable") // Required for atomic volatile operation
+            SnapshotHierarchy newRoot = updateFunction.apply(root);
+            root = newRoot;
             changeListener.finish();
         } finally {
             updateLock.unlock();
